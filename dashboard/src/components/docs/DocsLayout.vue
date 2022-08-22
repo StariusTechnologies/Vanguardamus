@@ -160,13 +160,13 @@
               to: `/docs/plugins/${plugin.name}`,
             })),
           },
-          {
+          /*{
             label: "Legacy Plugins",
             items: this.plugins.filter(plugin => plugin.info.legacy).map(plugin => ({
               label: plugin.info.prettyName || plugin.name,
               to: `/docs/plugins/${plugin.name}`,
             })),
-          }
+          }*/
         ];
       },
     },

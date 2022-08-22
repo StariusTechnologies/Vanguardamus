@@ -52,7 +52,7 @@
              class="command mb-4"
              v-bind:ref="getCommandSlug(command)" v-bind:class="{target: targetCommandId === getCommandSlug(command)}">
           <h4 class="text-xl font-semibold mb-0">
-            <span v-for="(trigger, index) in getTriggers(command)"> <span class="text-gray-600" v-if="index > 0">/</span> !{{ trigger }} </span>
+            <span v-for="(trigger, index) in getTriggers(command)"> <span class="text-gray-600" v-if="index > 0">/</span> .{{ trigger }} </span>
           </h4>
           <MarkdownBlock v-if="command.description"
                          :content="command.description"
@@ -93,7 +93,7 @@
                 <ul class="list-none">
                   <li v-for="(signature, index) in getCommandSignatures(command)" v-bind:class="{'mt-8': index !== 0}">
                     <code class="inline-code bg-gray-900">
-                      !{{ getTriggers(command)[0] }}
+                      .{{ getTriggers(command)[0] }}
                       <span v-for="paramInfo in getSignatureParameters(signature)">{{ renderParameterOrOption(paramInfo.name, paramInfo.param) }} </span>
                     </code>
 

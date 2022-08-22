@@ -5,7 +5,7 @@ import { utilityCmd } from "../types";
 export const RoleInfoCmd = utilityCmd({
   trigger: ["roleinfo"],
   description: "Show information about a role",
-  usage: "!role 106391128718245888",
+  usage: ".role 106391128718245888",
   permission: "can_roleinfo",
 
   signature: {

@@ -6,7 +6,7 @@ import { utilityCmd } from "../types";
 export const ServerInfoCmd = utilityCmd({
   trigger: ["server", "serverinfo"],
   description: "Show server information",
-  usage: "!server",
+  usage: ".server",
   permission: "can_server",
 
   signature: {

@@ -7,7 +7,7 @@ import { utilityCmd } from "../types";
 export const NicknameCmd = utilityCmd({
   trigger: ["nickname", "nick"],
   description: "Set a member's nickname",
-  usage: "!nickname 106391128718245888 Drag",
+  usage: ".nickname 106391128718245888 Drag",
   permission: "can_nickname",
 
   signature: {

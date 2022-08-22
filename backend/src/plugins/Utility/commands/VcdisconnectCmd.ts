@@ -13,7 +13,7 @@ import { LogsPlugin } from "../../Logs/LogsPlugin";
 export const VcdisconnectCmd = utilityCmd({
   trigger: ["vcdisconnect", "vcdisc", "vcdc", "vckick", "vck"],
   description: "Disconnect a member from their voice channel",
-  usage: "!vcdc @Dark",
+  usage: ".vcdc @Dark",
   permission: "can_vckick",
 
   signature: {

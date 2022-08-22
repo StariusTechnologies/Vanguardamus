@@ -7,7 +7,7 @@ import { utilityCmd } from "../types";
 export const InviteInfoCmd = utilityCmd({
   trigger: ["invite", "inviteinfo"],
   description: "Show information about an invite",
-  usage: "!invite overwatch",
+  usage: ".invite overwatch",
   permission: "can_inviteinfo",
 
   signature: {

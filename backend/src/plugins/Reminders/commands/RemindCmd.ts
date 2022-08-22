@@ -9,7 +9,7 @@ import { registerUpcomingReminder } from "../../../data/loops/upcomingRemindersL
 
 export const RemindCmd = remindersCmd({
   trigger: ["remind", "remindme", "reminder"],
-  usage: "!remind 3h Remind me of this in 3 hours please",
+  usage: ".remind 3h Remind me of this in 3 hours please",
   permission: "can_use",
 
   signature: {

@@ -8,7 +8,7 @@ export const resetButtonsCmd = typedGuildCommand<RoleButtonsPluginType>()({
   trigger: "role_buttons reset",
   description:
     "In case of issues, you can run this command to have Zeppelin 'forget' about specific role buttons and re-apply them. This will also repost the message, if not targeting an existing message.",
-  usage: "!role_buttons reset my_roles",
+  usage: ".role_buttons reset my_roles",
   permission: "can_reset",
   signature: {
     name: ct.string(),

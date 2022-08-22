@@ -5,7 +5,7 @@ import { autoReactionsCmd } from "../types";
 export const DisableAutoReactionsCmd = autoReactionsCmd({
   trigger: "auto_reactions disable",
   permission: "can_manage",
-  usage: "!auto_reactions disable 629990160477585428",
+  usage: ".auto_reactions disable 629990160477585428",
 
   signature: {
     channelId: ct.channelId(),

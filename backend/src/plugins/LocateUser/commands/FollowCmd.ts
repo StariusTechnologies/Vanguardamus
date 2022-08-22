@@ -9,7 +9,7 @@ import { registerExpiringVCAlert } from "../../../data/loops/expiringVCAlertsLoo
 export const FollowCmd = locateUserCmd({
   trigger: ["follow", "f"],
   description: "Sets up an alert that notifies you any time `<member>` switches or joins voice channels",
-  usage: "!f 108552944961454080",
+  usage: ".f 108552944961454080",
   permission: "can_alert",
 
   signature: {

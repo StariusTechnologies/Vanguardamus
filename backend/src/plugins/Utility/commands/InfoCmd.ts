@@ -20,7 +20,7 @@ import { getSnowflakeInfoEmbed } from "../functions/getSnowflakeInfoEmbed";
 export const InfoCmd = utilityCmd({
   trigger: "info",
   description: "Show information about the specified thing",
-  usage: "!info",
+  usage: ".info",
   permission: "can_info",
 
   signature: {

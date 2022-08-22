@@ -17,7 +17,7 @@ export const banSearchSignature = {
 export const BanSearchCmd = utilityCmd({
   trigger: ["bansearch", "bs"],
   description: "Search banned users",
-  usage: "!bansearch dragory",
+  usage: ".bansearch dragory",
   permission: "can_search",
 
   signature: banSearchSignature,

@@ -56,7 +56,7 @@ export async function archiveCmd(pluginData: GuildPluginData<UtilityPluginType>,
 export const ArchiveCmd = utilityCmd({
   trigger: ["archive"],
   description: "Archive a number of messages for a user",
-  usage: "!archive 106391128718245888",
+  usage: ".archive 106391128718245888",
   permission: "can_archive",
 
   signature: [

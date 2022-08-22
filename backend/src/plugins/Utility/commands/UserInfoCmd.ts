@@ -6,7 +6,7 @@ import { utilityCmd } from "../types";
 export const UserInfoCmd = utilityCmd({
   trigger: ["user", "userinfo", "whois"],
   description: "Show information about a user",
-  usage: "!user 106391128718245888",
+  usage: ".user 106391128718245888",
   permission: "can_userinfo",
 
   signature: {

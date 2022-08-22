@@ -6,7 +6,7 @@ import { utilityCmd } from "../types";
 export const NicknameResetCmd = utilityCmd({
   trigger: ["nickname reset", "nick reset"],
   description: "Reset a member's nickname to their username",
-  usage: "!nickname reset 106391128718245888",
+  usage: ".nickname reset 106391128718245888",
   permission: "can_nickname",
 
   signature: {

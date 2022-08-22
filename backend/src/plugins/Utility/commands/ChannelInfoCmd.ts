@@ -6,7 +6,7 @@ import { utilityCmd } from "../types";
 export const ChannelInfoCmd = utilityCmd({
   trigger: ["channel", "channelinfo"],
   description: "Show information about a channel",
-  usage: "!channel 534722016549404673",
+  usage: ".channel 534722016549404673",
   permission: "can_channelinfo",
 
   signature: {

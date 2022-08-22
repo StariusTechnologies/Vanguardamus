@@ -8,7 +8,7 @@ import { utilityCmd } from "../types";
 export const ContextCmd = utilityCmd({
   trigger: "context",
   description: "Get a link to the context of the specified message",
-  usage: "!context 94882524378968064 650391267720822785",
+  usage: ".context 94882524378968064 650391267720822785",
   permission: "can_context",
 
   signature: [

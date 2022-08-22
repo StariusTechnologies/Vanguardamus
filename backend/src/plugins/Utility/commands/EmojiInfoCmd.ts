@@ -7,7 +7,7 @@ import { utilityCmd } from "../types";
 export const EmojiInfoCmd = utilityCmd({
   trigger: ["emoji", "emojiinfo"],
   description: "Show information about an emoji",
-  usage: "!emoji 106391128718245888",
+  usage: ".emoji 106391128718245888",
   permission: "can_emojiinfo",
 
   signature: {

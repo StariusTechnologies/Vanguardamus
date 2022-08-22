@@ -7,7 +7,7 @@ import { clearExpiringVCAlert } from "../../../data/loops/expiringVCAlertsLoop";
 export const ListFollowCmd = locateUserCmd({
   trigger: ["follows", "fs"],
   description: "Displays all of your active alerts ordered by expiration time",
-  usage: "!fs",
+  usage: ".fs",
   permission: "can_alert",
 
   async run({ message: msg, pluginData }) {
@@ -34,7 +34,7 @@ export const DeleteFollowCmd = locateUserCmd({
   trigger: ["follows delete", "fs d"],
   description:
     "Deletes the alert at the position <num>.\nThe value needed for <num> can be found using `!follows` (`!fs`)",
-  usage: "!fs d <num>",
+  usage: ".fs d <num>",
   permission: "can_alert",
 
   signature: {

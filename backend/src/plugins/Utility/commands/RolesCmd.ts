@@ -8,7 +8,7 @@ import { utilityCmd } from "../types";
 export const RolesCmd = utilityCmd({
   trigger: "roles",
   description: "List all roles or roles matching a search",
-  usage: "!roles mod",
+  usage: ".roles mod",
   permission: "can_roles",
 
   signature: {

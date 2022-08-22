@@ -15,7 +15,7 @@ import { LogsPlugin } from "../../Logs/LogsPlugin";
 export const VcmoveCmd = utilityCmd({
   trigger: "vcmove",
   description: "Move a member to another voice channel",
-  usage: "!vcmove @Dragory 473223047822704651",
+  usage: ".vcmove @Dragory 473223047822704651",
   permission: "can_vcmove",
 
   signature: {
@@ -94,7 +94,7 @@ export const VcmoveCmd = utilityCmd({
 export const VcmoveAllCmd = utilityCmd({
   trigger: "vcmoveall",
   description: "Move all members of a voice channel to another voice channel",
-  usage: "!vcmoveall 551767166395875334 767497573560352798",
+  usage: ".vcmoveall 551767166395875334 767497573560352798",
   permission: "can_vcmove",
 
   signature: {

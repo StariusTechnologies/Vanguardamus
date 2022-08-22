@@ -5,7 +5,7 @@ import { utilityCmd } from "../types";
 export const SnowflakeInfoCmd = utilityCmd({
   trigger: ["snowflake", "snowflakeinfo"],
   description: "Show information about a snowflake ID",
-  usage: "!snowflake 534722016549404673",
+  usage: ".snowflake 534722016549404673",
   permission: "can_snowflake",
 
   signature: {

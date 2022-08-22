@@ -8,7 +8,7 @@ import { utilityCmd } from "../types";
 export const SourceCmd = utilityCmd({
   trigger: "source",
   description: "View the message source of the specified message id",
-  usage: "!source 534722219696455701",
+  usage: ".source 534722219696455701",
   permission: "can_source",
 
   signature: {

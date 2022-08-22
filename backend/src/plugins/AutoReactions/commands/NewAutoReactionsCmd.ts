@@ -12,7 +12,7 @@ const requiredPermissions = readChannelPermissions | Permissions.FLAGS.ADD_REACT
 export const NewAutoReactionsCmd = autoReactionsCmd({
   trigger: "auto_reactions",
   permission: "can_manage",
-  usage: "!auto_reactions 629990160477585428 👍 👎",
+  usage: ".auto_reactions 629990160477585428 👍 👎",
 
   signature: {
     channel: ct.guildTextBasedChannel(),

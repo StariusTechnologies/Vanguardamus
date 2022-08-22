@@ -7,7 +7,7 @@ import { utilityCmd } from "../types";
 export const HelpCmd = utilityCmd({
   trigger: "help",
   description: "Show a quick reference for the specified command's usage",
-  usage: "!help clean",
+  usage: ".help clean",
   permission: "can_help",
 
   signature: {

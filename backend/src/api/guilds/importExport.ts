@@ -65,11 +65,6 @@ export function initGuildsImportExportAPI(guildRouter: express.Router) {
   importExportRouter.post(
     "/:guildId/import",
     requireGuildPermission(ApiPermissions.ManageAccess),
-    rateLimit(
-      (req) => `import-${req.params.guildId}`,
-      5 * MINUTES,
-      "A single server can only import data once every 5 minutes",
-    ),
     async (req: Request, res: Response) => {
       let data: TImportExportData;
       try {
@@ -138,11 +133,6 @@ export function initGuildsImportExportAPI(guildRouter: express.Router) {
   importExportRouter.post(
     "/:guildId/export",
     requireGuildPermission(ApiPermissions.ManageAccess),
-    rateLimit(
-      (req) => `export-${req.params.guildId}`,
-      5 * MINUTES,
-      "A single server can only export data once every 5 minutes",
-    ),
     async (req: Request, res: Response) => {
       const guildCases = GuildCases.getGuildInstance(req.params.guildId);
 

@@ -3,7 +3,7 @@ import humanizeDuration from "humanize-duration";
 import { GuildPluginData } from "knub";
 import { hasPermission, sendErrorMessage, sendSuccessMessage } from "../../../pluginUtils";
 import { MutesPlugin } from "../../../plugins/Mutes/MutesPlugin";
-import { UnknownUser, asSingleLine, renderUserUsername } from "../../../utils";
+import { UnknownUser, asSingleLine, renderUsername } from "../../../utils";
 import { ModActionsPluginType } from "../types";
 import { formatReasonWithAttachments } from "./formatReasonWithAttachments";
 import { parseReason } from "./parseReason";
@@ -29,9 +29,7 @@ export async function actualUnmuteCmd(
   }
 
   const config = pluginData.config.get();
-  const reason = args.reason
-    ? parseReason(config, formatReasonWithAttachments(args.reason, [...msg.attachments.values()]))
-    : undefined;
+  const reason = args.reason ? parseReason(config, formatReasonWithAttachments(args.reason, msg)) : undefined;
 
   const mutesPlugin = pluginData.getPlugin(MutesPlugin);
   const result = await mutesPlugin.unmuteUser(user.id, args.time, {
@@ -52,7 +50,7 @@ export async function actualUnmuteCmd(
       pluginData,
       msg.channel,
       asSingleLine(`
-        Unmuting **${renderUserUsername(user)}**
+        Unmuting **${renderUsername(user)}**
         in ${timeUntilUnmute} (Case #${result.case.case_number})
       `),
     );
@@ -61,7 +59,7 @@ export async function actualUnmuteCmd(
       pluginData,
       msg.channel,
       asSingleLine(`
-        Unmuted **${renderUserUsername(user)}**
+        Unmuted **${renderUsername(user)}**
         (Case #${result.case.case_number})
       `),
     );

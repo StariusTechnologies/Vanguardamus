@@ -1,7 +1,7 @@
-import { APIEmbed, User } from "discord.js";
+import { APIEmbed } from "discord.js";
 import { commandTypeHelpers as ct } from "../../../commandTypes";
 import { sendErrorMessage } from "../../../pluginUtils";
-import { emptyEmbedValue, resolveUser, trimLines } from "../../../utils";
+import { UnknownUser, emptyEmbedValue, renderUsername, resolveMember, resolveUser, trimLines } from "../../../utils";
 import { asyncMap } from "../../../utils/async";
 import { createPaginatedMessage } from "../../../utils/createPaginatedMessage";
 import { getChunkedEmbedFields } from "../../../utils/getChunkedEmbedFields";
@@ -28,8 +28,10 @@ export const CasesModCmd = modActionsCmd({
 
   async run({ pluginData, message: msg, args }) {
     const modId = args.mod || msg.author.id;
-    const mod = await resolveUser(pluginData.client, modId);
-    const modName = mod instanceof User ? mod.tag : modId;
+    const mod =
+      (await resolveMember(pluginData.client, pluginData.guild, modId)) ||
+      (await resolveUser(pluginData.client, modId));
+    const modName = mod instanceof UnknownUser ? modId : renderUsername(mod);
 
     const casesPlugin = pluginData.getPlugin(CasesPlugin);
     const totalCases = await casesPlugin.getTotalCasesByMod(modId);
@@ -47,6 +49,8 @@ export const CasesModCmd = modActionsCmd({
       msg.channel,
       totalPages,
       async (page) => {
+        const config = pluginData.config.get();
+        const embedColour = config.embed_colour ?? config.embed_color ?? 0x2b2d31;
         const cases = await casesPlugin.getRecentCasesByMod(modId, casesPerPage, (page - 1) * casesPerPage);
         const lines = await asyncMap(cases, (c) => casesPlugin.getCaseSummary(c, true, msg.author.id));
 
@@ -57,10 +61,11 @@ export const CasesModCmd = modActionsCmd({
         const embed = {
           author: {
             name: title,
-            icon_url: mod instanceof User ? mod.displayAvatarURL() : undefined,
+            icon_url: mod instanceof UnknownUser ? undefined : mod.displayAvatarURL(),
           },
+          color: embedColour,
           fields: [
-            ...getChunkedEmbedFields(emptyEmbedValue, lines.join("\n")),
+            ...getChunkedEmbedFields(emptyEmbedValue, lines.join("\n\n")),
             {
               name: emptyEmbedValue,
               value: trimLines(`

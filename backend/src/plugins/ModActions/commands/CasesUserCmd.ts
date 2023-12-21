@@ -1,9 +1,17 @@
-import { APIEmbed, User } from "discord.js";
+import { APIEmbed } from "discord.js";
 import { commandTypeHelpers as ct } from "../../../commandTypes";
 import { CaseTypes } from "../../../data/CaseTypes";
 import { sendErrorMessage } from "../../../pluginUtils";
 import { CasesPlugin } from "../../../plugins/Cases/CasesPlugin";
-import { UnknownUser, chunkArray, emptyEmbedValue, renderUserUsername, resolveUser, trimLines } from "../../../utils";
+import {
+  UnknownUser,
+  chunkArray,
+  emptyEmbedValue,
+  renderUsername,
+  resolveMember,
+  resolveUser,
+  trimLines,
+} from "../../../utils";
 import { asyncMap } from "../../../utils/async";
 import { getChunkedEmbedFields } from "../../../utils/getChunkedEmbedFields";
 import { getGuildPrefix } from "../../../utils/getGuildPrefix";
@@ -35,8 +43,10 @@ export const CasesUserCmd = modActionsCmd({
   ],
 
   async run({ pluginData, message: msg, args }) {
-    const user = await resolveUser(pluginData.client, args.user);
-    if (!user.id) {
+    const user =
+      (await resolveMember(pluginData.client, pluginData.guild, args.user)) ||
+      (await resolveUser(pluginData.client, args.user));
+    if (user instanceof UnknownUser) {
       sendErrorMessage(pluginData, msg.channel, `User not found`);
       return;
     }
@@ -62,7 +72,7 @@ export const CasesUserCmd = modActionsCmd({
     const hiddenCases = cases.filter((c) => c.is_hidden);
 
     const userName =
-      user instanceof UnknownUser && cases.length ? cases[cases.length - 1].user_name : renderUserUsername(user);
+      user instanceof UnknownUser && cases.length ? cases[cases.length - 1].user_name : renderUsername(user);
 
     if (cases.length === 0) {
       msg.channel.send(`No cases found for **${userName}**`);
@@ -89,6 +99,8 @@ export const CasesUserCmd = modActionsCmd({
         }
       } else {
         // Compact view (= regular message with a preview of each case)
+        const config = pluginData.config.get();
+        const embedColour = config.embed_colour ?? config.embed_color ?? 0x2b2d31;
         const casesPlugin = pluginData.getPlugin(CasesPlugin);
         const lines = await asyncMap(casesToDisplay, (c) => casesPlugin.getCaseSummary(c, true, msg.author.id));
 
@@ -123,10 +135,11 @@ export const CasesUserCmd = modActionsCmd({
                 lineChunks.length === 1
                   ? `Cases for ${userName} (${lines.length} total)`
                   : `Cases ${chunkStart}–${chunkEnd} of ${lines.length} for ${userName}`,
-              icon_url: user instanceof User ? user.displayAvatarURL() : undefined,
+              icon_url: user.displayAvatarURL(),
             },
+            color: embedColour,
             fields: [
-              ...getChunkedEmbedFields(emptyEmbedValue, linesInChunk.join("\n")),
+              ...getChunkedEmbedFields(emptyEmbedValue, linesInChunk.join("\n\n")),
               ...(isLastChunk ? [footerField] : []),
             ],
           } satisfies APIEmbed;

@@ -1,13 +1,13 @@
 import { commandTypeHelpers as ct } from "../../../commandTypes";
 import { CaseTypes } from "../../../data/CaseTypes";
 import { Case } from "../../../data/entities/Case";
-import { CasesPlugin } from '../../Cases/CasesPlugin';
 import { canActOn, hasPermission, sendErrorMessage, sendSuccessMessage } from "../../../pluginUtils";
-import { renderUserUsername, resolveMember, resolveUser } from "../../../utils";
-import { formatReasonWithAttachments } from "../functions/formatReasonWithAttachments";
-import { modActionsCmd } from "../types";
+import { renderUsername, resolveMember, resolveUser } from "../../../utils";
+import { CasesPlugin } from "../../Cases/CasesPlugin";
 import { LogsPlugin } from "../../Logs/LogsPlugin";
+import { formatReasonWithAttachments } from "../functions/formatReasonWithAttachments";
 import { parseReason } from "../functions/parseReason";
+import { modActionsCmd } from "../types";
 
 const opts = {
   mod: ct.member({ option: true }),
@@ -60,7 +60,7 @@ export const AddCaseCmd = modActionsCmd({
       return;
     }
     const config = pluginData.config.get();
-    const reason = parseReason(config, formatReasonWithAttachments(args.reason, [...msg.attachments.values()]));
+    const reason = parseReason(config, formatReasonWithAttachments(args.reason, msg));
 
     // Create the case
     const casesPlugin = pluginData.getPlugin(CasesPlugin);
@@ -76,7 +76,7 @@ export const AddCaseCmd = modActionsCmd({
       sendSuccessMessage(
         pluginData,
         msg.channel,
-        `Case #${theCase.case_number} created for **${renderUserUsername(user)}**`,
+        `Case #${theCase.case_number} created for **${renderUsername(user)}**`,
       );
     } else {
       sendSuccessMessage(pluginData, msg.channel, `Case #${theCase.case_number} created`);

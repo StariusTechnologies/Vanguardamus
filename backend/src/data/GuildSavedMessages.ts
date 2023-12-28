@@ -34,6 +34,22 @@ export class GuildSavedMessages extends BaseGuildRepository<SavedMessage> {
       timestamp: msg.createdTimestamp,
     };
 
+    if (msg.reference) {
+      data.reference = {};
+
+      if (msg.reference.channelId) {
+        data.reference.channelId = msg.reference.channelId;
+      }
+
+      if (msg.reference.guildId) {
+        data.reference.guildId = msg.reference.guildId;
+      }
+
+      if (msg.reference.messageId) {
+        data.reference.messageId = msg.reference.messageId;
+      }
+    }
+
     if (msg.attachments.size) {
       data.attachments = Array.from(msg.attachments.values()).map((att) => ({
         id: att.id,
@@ -195,6 +211,44 @@ export class GuildSavedMessages extends BaseGuildRepository<SavedMessage> {
       .getMany();
 
     return this.processMultipleEntitiesFromDB(results);
+  }
+
+  async getRecentFromUserByChannel(
+    userId: string,
+    duration: number,
+  ): Promise<{ channelId: string; messages: SavedMessage[] }[]> {
+    const results = (await this.messages
+      .createQueryBuilder()
+      .select("channel_id")
+      .addSelect(
+        `JSON_ARRAYAGG(
+          JSON_OBJECT(
+            'id', CONCAT('', id),
+            'guild_id', CONCAT('', guild_id),
+            'channel_id', CONCAT('', channel_id),
+            'user_id', CONCAT('', user_id),
+            'is_bot', is_bot,
+            'data', \`data\`,
+            'posted_at', posted_at,
+            'deleted_at', deleted_at,
+            'is_permanent', is_permanent
+          )
+        )`,
+        "channel_data",
+      )
+      .where("guild_id = :guild_id", { guild_id: this.guildId })
+      .andWhere("user_id = :user_id", { user_id: userId })
+      .andWhere("deleted_at IS NULL")
+      .andWhere("posted_at > DATE_SUB(NOW(), INTERVAL :duration SECOND)", { duration: Math.floor(duration / 1000) })
+      .groupBy("channel_id")
+      .getRawMany()) as { channel_id: string; channel_data: string }[];
+
+    return asyncMap(results, async (data) => {
+      return {
+        channelId: data.channel_id,
+        messages: await this.processMultipleEntitiesFromDB(JSON.parse(data.channel_data)),
+      };
+    });
   }
 
   async createFromMsg(msg: Message, overrides = {}): Promise<void> {

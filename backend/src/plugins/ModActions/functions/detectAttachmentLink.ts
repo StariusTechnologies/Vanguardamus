@@ -27,9 +27,7 @@ export function sendAttachmentLinkDetectionErrorMessage(
     channel,
     "You manually added a Discord attachment link to the reason. This link will only work for one month.\n" +
       "You should instead **re-upload** the attachment with the command, in the same message.\n" +
-      restricted
-      ? "**Command canceled.**"
-      : "",
+      (restricted ? "**Command canceled.**" : ""),
   );
 }
 

@@ -17,12 +17,19 @@ export function detectAttachmentLink(reason: string | null | undefined) {
   return reason && /https:\/\/cdn\.discordapp\.com\/attachments/gu.test(reason);
 }
 
-export function sendAttachmentLinkDetectionErrorMessage(pluginData: AnyPluginData<any>, channel: TextBasedChannel) {
+export function sendAttachmentLinkDetectionErrorMessage(
+  pluginData: AnyPluginData<any>,
+  channel: TextBasedChannel,
+  restricted = false,
+) {
   sendErrorMessage(
     pluginData,
     channel,
     "You manually added a Discord attachment link to the reason. This link will only work for one month.\n" +
-      "You should instead **re-upload** the attachment with the command, in the same message.",
+      "You should instead **re-upload** the attachment with the command, in the same message.\n" +
+      restricted
+      ? "**Command canceled.**"
+      : "",
   );
 }
 
@@ -35,7 +42,9 @@ export function handleAttachmentLinkDetectionAndGetRestriction(
     return false;
   }
 
-  sendAttachmentLinkDetectionErrorMessage(pluginData, channel);
+  const restricted = attachmentLinkShouldRestrict(pluginData);
 
-  return attachmentLinkShouldRestrict(pluginData);
+  sendAttachmentLinkDetectionErrorMessage(pluginData, channel, restricted);
+
+  return restricted;
 }

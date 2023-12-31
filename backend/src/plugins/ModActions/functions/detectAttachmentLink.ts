@@ -14,7 +14,7 @@ export function attachmentLinkShouldRestrict(pluginData: GuildPluginData<ModActi
 }
 
 export function detectAttachmentLink(reason: string | null | undefined) {
-  return reason && /https:\/\/cdn\.discordapp\.com\/attachments/gu.test(reason);
+  return reason && /https:\/\/(cdn|media)\.discordapp\.(com|net)\/attachments/gu.test(reason);
 }
 
 export function sendAttachmentLinkDetectionErrorMessage(
@@ -22,12 +22,14 @@ export function sendAttachmentLinkDetectionErrorMessage(
   channel: TextBasedChannel,
   restricted = false,
 ) {
+  const emoji = pluginData.fullConfig.plugins?.global?.config?.error_emoji ?? "";
+
   sendErrorMessage(
     pluginData,
     channel,
     "You manually added a Discord attachment link to the reason. This link will only work for one month.\n" +
       "You should instead **re-upload** the attachment with the command, in the same message.\n" +
-      (restricted ? "**Command canceled.**" : ""),
+      (restricted ? `\n${emoji} **Command canceled.** ${emoji}` : "").trim(),
   );
 }
 

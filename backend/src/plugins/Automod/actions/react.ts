@@ -1,4 +1,4 @@
-import { GuildTextBasedChannel, Message, PermissionsBitField, Snowflake } from "discord.js";
+import { GuildTextBasedChannel, PermissionsBitField, Snowflake } from "discord.js";
 import * as t from "io-ts";
 import { isEmoji, verboseChannelMention } from "../../../utils";
 import { hasDiscordPermissions } from "../../../utils/hasDiscordPermissions";
@@ -29,7 +29,7 @@ export const ReactAction = automodAction({
     }, new Map());
 
     for (const [channelId, _contexts] of contextsByChannelId.entries()) {
-      const message = _contexts[0].message as Message | undefined;
+      const messageIds = [...new Set(_contexts.filter((c) => c.message?.id).map((c) => c.message?.id))] as string[];
       const emojis =
         typeof actionConfig === "string"
           ? isEmoji(actionConfig)
@@ -37,11 +37,16 @@ export const ReactAction = automodAction({
             : []
           : actionConfig.filter((emoji) => isEmoji(emoji));
 
-      if (!message || emojis.length < 1) {
+      if (messageIds.length < 1 || emojis.length < 1) {
         return;
       }
 
       const channel = pluginData.guild.channels.cache.get(channelId as Snowflake) as GuildTextBasedChannel;
+      const messages = (await Promise.all(messageIds.map((id) => channel.messages.fetch(id)))).filter((m) => m);
+
+      if (messages.length < 1) {
+        return;
+      }
 
       // Check for basic Add Reactions and View Channel permissions
       if (
@@ -57,8 +62,10 @@ export const ReactAction = automodAction({
         continue;
       }
 
-      for (const emoji of emojis) {
-        await message.react(emoji);
+      for (const message of messages) {
+        for (const emoji of emojis) {
+          await message.react(emoji);
+        }
       }
     }
   },

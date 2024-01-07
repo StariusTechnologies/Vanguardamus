@@ -41,6 +41,7 @@ export const availableActions: Record<string, AutomodActionBlueprint<any>> = {
   archive_thread: ArchiveThreadAction,
   change_roles: ChangeRolesAction,
   change_perms: ChangePermsAction,
+  react: ReactAction,
 };
 
 export const AvailableActions = t.type({

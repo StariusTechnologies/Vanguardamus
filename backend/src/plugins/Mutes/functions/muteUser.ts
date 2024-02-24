@@ -8,7 +8,8 @@ import { MuteTypes } from "../../../data/MuteTypes";
 import { Case } from "../../../data/entities/Case";
 import { Mute } from "../../../data/entities/Mute";
 import { registerExpiringMute } from "../../../data/loops/expiringMutesLoop";
-import { TemplateSafeValueContainer, renderTemplate } from "../../../templateFormatter";
+import { areCasesGlobal } from "../../../pluginUtils";
+import { TemplateParseError, TemplateSafeValueContainer, renderTemplate } from "../../../templateFormatter";
 import {
   UserNotificationMethod,
   UserNotificationResult,
@@ -26,8 +27,6 @@ import { RoleManagerPlugin } from "../../RoleManager/RoleManagerPlugin";
 import { MuteOptions, MutesPluginType } from "../types";
 import { getDefaultMuteType } from "./getDefaultMuteType";
 import { getTimeoutExpiryTime } from "./getTimeoutExpiryTime";
-
-const TIMEOUT_MAX = 27 * 24 * 60 * 60 * 1000;
 
 /**
  * TODO: Clean up this function
@@ -64,9 +63,10 @@ export async function muteUser(
   const member = await resolveMember(pluginData.client, pluginData.guild, user.id, true); // Grab the fresh member so we don't have stale role info
   const config = await pluginData.config.getMatchingConfig({ member, userId });
 
+  const logs = pluginData.getPlugin(LogsPlugin);
+
   let rolesToRestore: string[] = [];
   if (member) {
-    const logs = pluginData.getPlugin(LogsPlugin);
     // remove and store any roles to be removed/restored
     const currentUserRoles = [...member.roles.cache.keys()];
     let newRoles: string[] = currentUserRoles;
@@ -187,22 +187,34 @@ export async function muteUser(
   const template = existingMute
     ? config.update_mute_message
     : muteTime
-    ? config.timed_mute_message
-    : config.mute_message;
+      ? config.timed_mute_message
+      : config.mute_message;
 
-  const muteMessage =
-    template &&
-    (await renderTemplate(
-      template,
-      new TemplateSafeValueContainer({
-        guildName: pluginData.guild.name,
-        reason: reasonWithAttachments || "None",
-        time: timeUntilUnmuteStr,
-        moderator: muteOptions.caseArgs?.modId
-          ? userToTemplateSafeUser(await resolveUser(pluginData.client, muteOptions.caseArgs.modId))
-          : null,
-      }),
-    ));
+  let muteMessage: string | null = null;
+  try {
+    muteMessage =
+      template &&
+      (await renderTemplate(
+        template,
+        new TemplateSafeValueContainer({
+          guildName: pluginData.guild.name,
+          reason: reasonWithAttachments || "None",
+          time: timeUntilUnmuteStr,
+          moderator: muteOptions.caseArgs?.modId
+            ? userToTemplateSafeUser(await resolveUser(pluginData.client, muteOptions.caseArgs.modId))
+            : null,
+        }),
+      ));
+  } catch (err) {
+    if (err instanceof TemplateParseError) {
+      logs.logBotAlert({
+        body: `Invalid mute message format. The mute was still applied: ${err.message}`,
+      });
+    } else {
+      lock.unlock();
+      throw err;
+    }
+  }
 
   if (muteMessage && member) {
     let contactMethods: UserNotificationMethod[] = [];
@@ -230,15 +242,19 @@ export async function muteUser(
   // Create/update a case
   const casesPlugin = pluginData.getPlugin(CasesPlugin);
   let theCase: Case | null =
-    existingMute && existingMute.case_id ? await pluginData.state.cases.find(existingMute.case_id) : null;
+    existingMute && existingMute.case_id
+      ? await pluginData.state.cases.find(existingMute.case_id, areCasesGlobal(pluginData))
+      : null;
 
   if (theCase) {
     // Update old case
     const noteDetails = [`Mute updated to ${muteTime ? timeUntilUnmuteStr : "indefinite"}`];
-    const reasons = reason ? [reason] : [];
+    const reasons = reason ? [reason] : [""]; // Empty string so that there is a case update even without reason
+
     if (muteOptions.caseArgs?.extraNotes) {
       reasons.push(...muteOptions.caseArgs.extraNotes);
     }
+
     for (const noteReason of reasons) {
       await casesPlugin.createCaseNote({
         caseId: existingMute!.case_id,
